@@ -1,6 +1,6 @@
 def hill():
     choice = input("Enter e for Encrypt or d for Decrypt: ").lower()
-    text = input("Enter text in uppercase: ")
+    text = input("Enter text in uppercase: ").upper()
 
     key = [
         [3, 3],
@@ -9,13 +9,21 @@ def hill():
 
     det = (key[0][0] * key[1][1] - key[0][1] * key[1][0]) % 26
 
-    try:
-        det_inv = pow(det, -1, 26)
-    except ValueError:
+    det_inv = 0
+    for number in range(26):
+        if (det * number) % 26 == 1:
+            det_inv = number
+            break
+
+    if det_inv == 0:
         print("Invalid key matrix.")
         return
 
-    text = "".join(c for c in text if c.isalpha())
+    clean_text = ""
+    for character in text:
+        if character.isalpha():
+            clean_text += character
+    text = clean_text
 
     if choice == "e":
 
@@ -68,3 +76,6 @@ def hill():
         return
 
     print("Result:", result)
+
+
+hill()

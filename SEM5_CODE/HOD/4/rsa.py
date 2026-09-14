@@ -7,9 +7,13 @@ def rsa():
 
     e = int(input("Enter public key e: "))
 
-    try:
-        d = pow(e, -1, phi)
-    except ValueError:
+    d = 0
+    for number in range(1, phi):
+        if (e * number) % phi == 1:
+            d = number
+            break
+
+    if d == 0:
         print("Invalid e.")
         return
 
@@ -22,3 +26,6 @@ def rsa():
     print("Private Key:", (d, n))
     print("Encrypted  :", encrypted)
     print("Decrypted  :", decrypted)
+
+
+rsa()

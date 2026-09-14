@@ -1,11 +1,16 @@
 def monoalphabetic():
-    key = input("Enter 26-letter key in uppercase: ")
+    key = input("Enter 26-letter key in uppercase: ").upper()
     choice = input("Enter e for Encrypt or d for Decrypt: ").lower()
-    text = input("Enter text in uppercase: ")
+    text = input("Enter text in uppercase: ").upper()
 
     alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
-    if len(key) != 26 or len(set(key)) != 26 or not key.isalpha():
+    unique_letters = ""
+    for letter in key:
+        if letter not in unique_letters:
+            unique_letters += letter
+
+    if len(key) != 26 or len(unique_letters) != 26 or not key.isalpha():
         print("Invalid key. Enter 26 unique letters.")
         return
 
@@ -30,3 +35,6 @@ def monoalphabetic():
             result += ch
 
     print("Result:", result)
+
+
+monoalphabetic()

@@ -15,3 +15,6 @@ def diffie_hellman():
     print("Bob Public Key   :", B)
     print("Alice Shared Key :", alice_key)
     print("Bob Shared Key   :", bob_key)
+
+
+diffie_hellman()

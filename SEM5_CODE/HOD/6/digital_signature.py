@@ -23,7 +23,11 @@ def digital_signature():
     phi = (p - 1) * (q - 1)
 
     e = 17
-    d = pow(e, -1, phi)
+    d = 0
+    for number in range(1, phi):
+        if (e * number) % phi == 1:
+            d = number
+            break
 
     hash_number = int(hash_value, 16) % n
 
@@ -44,3 +48,6 @@ def digital_signature():
 
     else:
         print("Invalid choice")
+
+
+digital_signature()

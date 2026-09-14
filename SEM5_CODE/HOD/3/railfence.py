@@ -63,3 +63,6 @@ def railfence():
         return
 
     print("Result:", result)
+
+
+railfence()

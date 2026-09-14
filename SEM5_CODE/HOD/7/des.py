@@ -42,3 +42,6 @@ def des():
 
     else:
         print("Invalid choice")
+
+
+des()

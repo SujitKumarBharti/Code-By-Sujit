@@ -1,7 +1,7 @@
 def otp():
-    key = input("Enter key in uppercase: ")
+    key = input("Enter key in uppercase: ").upper()
     choice = input("Enter e for Encrypt or d for Decrypt: ").lower()
-    text = input("Enter text in uppercase: ")
+    text = input("Enter text in uppercase: ").upper()
 
     if not text.isalpha() or not key.isalpha():
         print("Only alphabets are allowed.")
@@ -9,6 +9,10 @@ def otp():
 
     if len(key) != len(text):
         print("OTP key length must be equal to text length.")
+        return
+
+    if choice != "e" and choice != "d":
+        print("Invalid choice")
         return
 
     result = ""
@@ -27,10 +31,9 @@ def otp():
                 (ord(key[i]) - 65)
             ) % 26
 
-        else:
-            print("Invalid choice")
-            return
-
         result += chr(value + 65)
 
     print("Result:", result)
+
+
+otp()

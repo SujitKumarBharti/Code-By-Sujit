@@ -1,5 +1,12 @@
 def columnar():
-    key = list(map(int, input("Enter key: ").split()))
+    key_text = input("Enter key (example: 3 1 2): ").split()
+    key = []
+    for item in key_text:
+        try:
+            key.append(int(item))
+        except ValueError:
+            print("Key must contain numbers only.")
+            return
     choice = input("Enter e for Encrypt or d for Decrypt: ").lower()
     text = input("Enter text in uppercase: ").replace(" ", "")
 
@@ -14,10 +21,9 @@ def columnar():
         while len(text) % cols != 0:
             text += "X"
 
-        rows = [
-            text[i:i + cols]
-            for i in range(0, len(text), cols)
-        ]
+        rows = []
+        for i in range(0, len(text), cols):
+            rows.append(text[i:i + cols])
 
         result = ""
 
@@ -34,7 +40,9 @@ def columnar():
             return
 
         rows_count = len(text) // cols
-        matrix = [[""] * cols for _ in range(rows_count)]
+        matrix = []
+        for row in range(rows_count):
+            matrix.append([""] * cols)
 
         index = 0
 
@@ -55,3 +63,6 @@ def columnar():
         return
 
     print("Result:", result)
+
+
+columnar()

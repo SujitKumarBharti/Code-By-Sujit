@@ -1,14 +1,23 @@
 def playfair():
-    key = input("Enter key in uppercase: ").replace("J", "I")
+    key = input("Enter key in uppercase: ").upper().replace("J", "I")
     choice = input("Enter e for Encrypt or d for Decrypt: ").lower()
-    text = input("Enter text in uppercase: ").replace("J", "I")
+    text = input("Enter text in uppercase: ").upper().replace("J", "I")
 
     alphabet = "ABCDEFGHIKLMNOPQRSTUVWXYZ"
 
-    key = "".join(dict.fromkeys(c for c in key if c.isalpha()))
-    letters = key + "".join(c for c in alphabet if c not in key)
+    clean_key = ""
+    for character in key:
+        if character.isalpha() and character not in clean_key:
+            clean_key += character
 
-    matrix = [letters[i:i+5] for i in range(0, 25, 5)]
+    letters = clean_key
+    for character in alphabet:
+        if character not in letters:
+            letters += character
+
+    matrix = []
+    for i in range(0, 25, 5):
+        matrix.append(letters[i:i + 5])
 
     print("\nPlayfair Matrix:")
 
@@ -43,7 +52,9 @@ def playfair():
             print("Invalid ciphertext.")
             return
 
-        pairs = [(text[i], text[i + 1]) for i in range(0, len(text), 2)]
+        pairs = []
+        for i in range(0, len(text), 2):
+            pairs.append((text[i], text[i + 1]))
         shift = -1
 
     else:
@@ -74,3 +85,6 @@ def playfair():
             result += matrix[rb][ca]
 
     print("Result:", result)
+
+
+playfair()
