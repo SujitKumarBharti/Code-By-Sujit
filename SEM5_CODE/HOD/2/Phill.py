@@ -1,6 +1,6 @@
 def hill():
     choice = input("Enter e for Encrypt or d for Decrypt: ").lower()
-    text = input("Enter text: ").upper()
+    text = input("Enter text in uppercase: ")
 
     key = [
         [3, 3],

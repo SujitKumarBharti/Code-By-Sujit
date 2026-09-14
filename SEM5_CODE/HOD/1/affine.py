@@ -2,7 +2,7 @@ def affine():
     a = int(input("Enter a: "))
     b = int(input("Enter b: "))
     choice = input("Enter e for Encrypt or d for Decrypt: ").lower()
-    text = input("Enter text: ")
+    text = input("Enter text in uppercase: ")
 
     try:
         inverse = pow(a, -1, 26)
@@ -12,7 +12,7 @@ def affine():
 
     result = ""
 
-    for ch in text.upper():
+    for ch in text:
         if ch.isalpha():
             x = ord(ch) - 65
 

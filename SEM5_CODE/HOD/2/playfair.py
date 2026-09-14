@@ -1,7 +1,7 @@
 def playfair():
-    key = input("Enter key: ").upper().replace("J", "I")
+    key = input("Enter key in uppercase: ").replace("J", "I")
     choice = input("Enter e for Encrypt or d for Decrypt: ").lower()
-    text = input("Enter text: ").upper().replace("J", "I")
+    text = input("Enter text in uppercase: ").replace("J", "I")
 
     alphabet = "ABCDEFGHIKLMNOPQRSTUVWXYZ"
 

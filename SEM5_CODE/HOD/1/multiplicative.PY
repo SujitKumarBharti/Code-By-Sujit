@@ -1,7 +1,7 @@
 def multiplicative():
     key = int(input("Enter key: "))
     choice = input("Enter e for Encrypt or d for Decrypt: ").lower()
-    text = input("Enter text: ")
+    text = input("Enter text in uppercase: ")
 
     if choice == "e":
         multiplier = key
@@ -17,7 +17,7 @@ def multiplicative():
 
     result = ""
 
-    for ch in text.upper():
+    for ch in text:
         if ch.isalpha():
             x = ord(ch) - 65
             result += chr((x * multiplier) % 26 + 65)

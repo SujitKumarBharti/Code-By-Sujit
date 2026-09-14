@@ -1,7 +1,7 @@
 def otp():
-    key = input("Enter key: ").upper()
+    key = input("Enter key in uppercase: ")
     choice = input("Enter e for Encrypt or d for Decrypt: ").lower()
-    text = input("Enter text: ").upper()
+    text = input("Enter text in uppercase: ")
 
     if not text.isalpha() or not key.isalpha():
         print("Only alphabets are allowed.")

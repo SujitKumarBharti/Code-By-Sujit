@@ -1,7 +1,7 @@
 def monoalphabetic():
-    key = input("Enter 26-letter key: ").upper()
+    key = input("Enter 26-letter key in uppercase: ")
     choice = input("Enter e for Encrypt or d for Decrypt: ").lower()
-    text = input("Enter text: ").upper()
+    text = input("Enter text in uppercase: ")
 
     alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 

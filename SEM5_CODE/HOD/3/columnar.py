@@ -1,7 +1,7 @@
 def columnar():
     key = list(map(int, input("Enter key: ").split()))
     choice = input("Enter e for Encrypt or d for Decrypt: ").lower()
-    text = input("Enter text: ").replace(" ", "").upper()
+    text = input("Enter text in uppercase: ").replace(" ", "")
 
     cols = len(key)
 

@@ -2,7 +2,7 @@ def double_columnar():
     key1 = list(map(int, input("Enter first key: ").split()))
     key2 = list(map(int, input("Enter second key: ").split()))
     choice = input("Enter e for Encrypt or d for Decrypt: ").lower()
-    text = input("Enter text: ").replace(" ", "").upper()
+    text = input("Enter text in uppercase: ").replace(" ", "")
 
     def encrypt(text, key):
         cols = len(key)
