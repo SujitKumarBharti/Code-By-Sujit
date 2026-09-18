@@ -1,0 +1,390 @@
+DIGITAL SIGNATURE TOOL
+======================
+
+A simple JPEG digital signature tool using:
+
+    RSA-2048
+    RSA-PSS
+    SHA-256
+
+The tool creates a separate signed copy of the original JPEG.
+
+The original image is never modified.
+
+------------------------------------------------------------
+PROJECT STRUCTURE
+------------------------------------------------------------
+
+.
+├── dsign.py
+├── org
+│   └── jrsu.jpeg
+├── private_key.pem
+├── public_key.pem
+└── readme
+
+
+------------------------------------------------------------
+REQUIREMENTS
+------------------------------------------------------------
+
+Python 3
+
+Python package:
+
+    cryptography
+
+
+Install cryptography:
+
+    python3 -m pip install cryptography
+
+If using a Python virtual environment:
+
+    source /opt/python-venv/bin/activate
+
+    python3 -m pip install cryptography
+
+
+------------------------------------------------------------
+1. GENERATE RSA PRIVATE KEY
+------------------------------------------------------------
+
+Generate a 2048-bit RSA private key:
+
+    openssl genrsa -out private_key.pem 2048
+
+
+This creates:
+
+    private_key.pem
+
+
+The private key is used to create the digital signature.
+
+Keep the private key secure.
+
+
+------------------------------------------------------------
+2. GENERATE RSA PUBLIC KEY
+------------------------------------------------------------
+
+Generate the public key from the private key:
+
+    openssl rsa -in private_key.pem -pubout -out public_key.pem
+
+
+This creates:
+
+    public_key.pem
+
+
+The public key is used to verify the digital signature.
+
+
+------------------------------------------------------------
+3. CHECK PROJECT FILES
+------------------------------------------------------------
+
+Run:
+
+    tree
+
+
+Expected structure:
+
+    .
+    ├── dsign.py
+    ├── org
+    │   └── jrsu.jpeg
+    ├── private_key.pem
+    ├── public_key.pem
+    └── readme
+
+
+------------------------------------------------------------
+4. VIEW HELP
+------------------------------------------------------------
+
+Run:
+
+    python3 dsign.py --help
+
+
+Available commands:
+
+    sign
+    check
+    verify
+
+
+------------------------------------------------------------
+5. SIGN THE IMAGE
+------------------------------------------------------------
+
+The original image is:
+
+    ./org/jrsu.jpeg
+
+
+Run:
+
+    python3 dsign.py sign -privatekey ./private_key.pem -file ./org/jrsu.jpeg
+
+
+The program creates:
+
+    ./org/jrsu_signed.jpeg
+
+
+The original file:
+
+    ./org/jrsu.jpeg
+
+
+is not modified.
+
+
+The signature is embedded inside the signed JPEG.
+
+No separate .sig file is created.
+
+
+Expected output:
+
+    ✓ SIGNED
+    Original   : /home/bsilent/Downloads/org/jrsu.jpeg
+    Signed     : /home/bsilent/Downloads/org/jrsu_signed.jpeg
+    SHA-256    : <SHA-256 HASH>
+    Algorithm  : RSA-2048 + PSS + SHA-256
+    Signed At  : <DATE AND TIME>
+
+
+------------------------------------------------------------
+6. VERIFY THE SIGNED IMAGE
+------------------------------------------------------------
+
+Verify the signed image using the public key:
+
+    python3 dsign.py check -publickey ./public_key.pem -file ./org/jrsu_signed.jpeg
+
+
+If the signature matches:
+
+    ✓ SIGNATURE VALID
+    --------------------------------
+    File      : /home/bsilent/Downloads/org/jrsu_signed.jpeg
+    SHA-256   : <SHA-256 HASH>
+    Algorithm : RSA-2048 + PSS + SHA-256
+    --------------------------------
+
+
+If the image or signature has been modified:
+
+    ✗ SIGNATURE INVALID
+    --------------------------------
+    File      : /home/bsilent/Downloads/org/jrsu_signed.jpeg
+    SHA-256   : <SHA-256 HASH>
+    Algorithm : RSA-2048 + PSS + SHA-256
+    --------------------------------
+
+
+------------------------------------------------------------
+7. VERIFY COMMAND
+------------------------------------------------------------
+
+The tool also provides a verify command.
+
+Run:
+
+    python3 dsign.py verify -publickey ./public_key.pem -file ./org/jrsu_signed.jpeg
+
+
+A valid signature produces:
+
+    ✓ SIGNATURE VALID
+
+
+An invalid signature produces:
+
+    ✗ SIGNATURE INVALID
+
+
+------------------------------------------------------------
+8. COMPLETE SETUP AND RUN
+------------------------------------------------------------
+
+The complete process can be performed using these commands:
+
+    openssl genrsa -out private_key.pem 2048
+
+    openssl rsa -in private_key.pem -pubout -out public_key.pem
+
+    python3 -m pip install cryptography
+
+    python3 dsign.py sign -privatekey ./private_key.pem -file ./org/jrsu.jpeg
+
+    python3 dsign.py check -publickey ./public_key.pem -file ./org/jrsu_signed.jpeg
+
+
+------------------------------------------------------------
+9. COMPLETE COMMAND FLOW
+------------------------------------------------------------
+
+Generate private key:
+
+    openssl genrsa -out private_key.pem 2048
+
+Generate public key:
+
+    openssl rsa -in private_key.pem -pubout -out public_key.pem
+
+Sign:
+
+    python3 dsign.py sign -privatekey ./private_key.pem -file ./org/jrsu.jpeg
+
+Check:
+
+    python3 dsign.py check -publickey ./public_key.pem -file ./org/jrsu_signed.jpeg
+
+
+------------------------------------------------------------
+10. HOW IT WORKS
+------------------------------------------------------------
+
+SIGNING:
+
+    jrsu.jpeg
+        |
+        v
+    SHA-256
+        |
+        v
+    RSA-PSS
+        |
+        v
+    Private Key
+        |
+        v
+    Digital Signature
+        |
+        v
+    jrsu_signed.jpeg
+
+
+VERIFICATION:
+
+    jrsu_signed.jpeg
+        |
+        v
+    Extract Embedded Signature
+        |
+        v
+    SHA-256
+        |
+        v
+    RSA-PSS Verification
+        |
+        v
+    Public Key
+        |
+        v
+    VALID / INVALID
+
+
+------------------------------------------------------------
+11. FILES CREATED
+------------------------------------------------------------
+
+Original image:
+
+    org/jrsu.jpeg
+
+
+Signed image:
+
+    org/jrsu_signed.jpeg
+
+
+Private key:
+
+    private_key.pem
+
+
+Public key:
+
+    public_key.pem
+
+
+No separate signature file is required.
+
+
+------------------------------------------------------------
+12. IMPORTANT
+------------------------------------------------------------
+
+The private key must be kept secure.
+
+Do not share:
+
+    private_key.pem
+
+
+The public key can be shared for signature verification:
+
+    public_key.pem
+
+
+The original image remains unchanged.
+
+The signed image is created as a separate file:
+
+    jrsu_signed.jpeg
+
+
+------------------------------------------------------------
+13. ALGORITHM
+------------------------------------------------------------
+
+Key:
+
+    RSA-2048
+
+Signature padding:
+
+    RSA-PSS
+
+Hash:
+
+    SHA-256
+
+
+------------------------------------------------------------
+14. QUICK COMMANDS
+------------------------------------------------------------
+
+Generate keys:
+
+    openssl genrsa -out private_key.pem 2048
+
+    openssl rsa -in private_key.pem -pubout -out public_key.pem
+
+
+Sign:
+
+    python3 dsign.py sign -privatekey ./private_key.pem -file ./org/jrsu.jpeg
+
+
+Check:
+
+    python3 dsign.py check -publickey ./public_key.pem -file ./org/jrsu_signed.jpeg
+
+
+Verify:
+
+    python3 dsign.py verify -publickey ./public_key.pem -file ./org/jrsu_signed.jpeg
+
+
+------------------------------------------------------------
+END
+------------------------------------------------------------

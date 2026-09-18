@@ -1,0 +1,996 @@
+============================================================
+              DSIGN COMPLETE AUTOMATED TEST
+============================================================
+
+Source directory : /home/bsilent/Downloads/org/testdata
+Results directory: /home/bsilent/Downloads/test-results
+
+============================================================
+TESTING FILE: image.jpg
+============================================================
+
+┌──(bsilent㉿bsilent)-[~/Downloads]
+└─$ python dsign.py sign -privatekey /home/bsilent/Downloads/private_key.pem -file /home/bsilent/Downloads/org/testdata/image.jpg
+
+
+[92m✓ DIGITAL SIGNATURE CREATED[0m
+--------------------------------
+Original   : /home/bsilent/Downloads/org/testdata/image.jpg
+Signed     : /home/bsilent/Downloads/org/testdata/image_signed.jpg
+SHA-256    : 39c7350ae0264c393728bf8a381ea9a4c8f7a496dd32a8f3893b8b6b8270af9a
+Algorithm  : RSA-2048 + PSS + SHA-256
+Signed At  : 2026-09-19 00:52:00 IST
+--------------------------------
+
+
+✓ SIGN TEST PASS
+
+┌──(bsilent㉿bsilent)-[~/Downloads]
+└─$ python dsign.py check -publickey /home/bsilent/Downloads/public_key.pem -file /home/bsilent/Downloads/test-results/signed/image_signed.jpg
+
+
+[92m✓ SIGNATURE VALID[0m
+--------------------------------
+File      : /home/bsilent/Downloads/test-results/signed/image_signed.jpg
+SHA-256   : 39c7350ae0264c393728bf8a381ea9a4c8f7a496dd32a8f3893b8b6b8270af9a
+Algorithm : RSA-2048 + PSS + SHA-256
+--------------------------------
+
+
+✓ ORIGINAL SIGNED FILE: VALID
+┌──(bsilent㉿bsilent)-[~/Downloads]
+└─$ cp /home/bsilent/Downloads/test-results/signed/image_signed.jpg /home/bsilent/Downloads/test-results/renamed/image_renamed.jpg
+
+
+┌──(bsilent㉿bsilent)-[~/Downloads]
+└─$ python dsign.py check -publickey /home/bsilent/Downloads/public_key.pem -file /home/bsilent/Downloads/test-results/renamed/image_renamed.jpg
+
+
+[92m✓ SIGNATURE VALID[0m
+--------------------------------
+File      : /home/bsilent/Downloads/test-results/renamed/image_renamed.jpg
+SHA-256   : 39c7350ae0264c393728bf8a381ea9a4c8f7a496dd32a8f3893b8b6b8270af9a
+Algorithm : RSA-2048 + PSS + SHA-256
+--------------------------------
+
+
+✓ RENAMED FILE: VALID
+┌──(bsilent㉿bsilent)-[~/Downloads]
+└─$ cp /home/bsilent/Downloads/test-results/renamed/image_renamed.jpg /home/bsilent/Downloads/test-results/copied/image_copied.jpg
+
+
+┌──(bsilent㉿bsilent)-[~/Downloads]
+└─$ python dsign.py check -publickey /home/bsilent/Downloads/public_key.pem -file /home/bsilent/Downloads/test-results/copied/image_copied.jpg
+
+
+[92m✓ SIGNATURE VALID[0m
+--------------------------------
+File      : /home/bsilent/Downloads/test-results/copied/image_copied.jpg
+SHA-256   : 39c7350ae0264c393728bf8a381ea9a4c8f7a496dd32a8f3893b8b6b8270af9a
+Algorithm : RSA-2048 + PSS + SHA-256
+--------------------------------
+
+
+✓ COPIED FILE: VALID
+┌──(bsilent㉿bsilent)-[~/Downloads]
+└─$ cp /home/bsilent/Downloads/test-results/copied/image_copied.jpg /home/bsilent/Downloads/test-results/tampered/image_tampered.jpg
+
+
+┌──(bsilent㉿bsilent)-[~/Downloads]
+└─$ python3 -c "from pathlib import Path; p=Path('/home/bsilent/Downloads/test-results/tampered/image_tampered.jpg'); d=bytearray(p.read_bytes()); i=len(d)//2; d[i]^=1; p.write_bytes(d)"
+
+
+Expected result: SIGNATURE INVALID
+
+┌──(bsilent㉿bsilent)-[~/Downloads]
+└─$ python dsign.py check -publickey /home/bsilent/Downloads/public_key.pem -file /home/bsilent/Downloads/test-results/tampered/image_tampered.jpg
+
+
+[91m✗ SIGNATURE INVALID[0m
+--------------------------------
+File      : /home/bsilent/Downloads/test-results/tampered/image_tampered.jpg
+SHA-256   : ac38bd431c2ced745141993f1ae68a2dd27b27dd328d2cae34b6f69c9afb9ca1
+Algorithm : RSA-2048 + PSS + SHA-256
+--------------------------------
+
+
+✓ TAMPER TEST PASS: Modification detected.
+
+============================================================
+TESTING FILE: image.jpeg
+============================================================
+
+┌──(bsilent㉿bsilent)-[~/Downloads]
+└─$ python dsign.py sign -privatekey /home/bsilent/Downloads/private_key.pem -file /home/bsilent/Downloads/org/testdata/image.jpeg
+
+
+[92m✓ DIGITAL SIGNATURE CREATED[0m
+--------------------------------
+Original   : /home/bsilent/Downloads/org/testdata/image.jpeg
+Signed     : /home/bsilent/Downloads/org/testdata/image_signed.jpeg
+SHA-256    : 39c7350ae0264c393728bf8a381ea9a4c8f7a496dd32a8f3893b8b6b8270af9a
+Algorithm  : RSA-2048 + PSS + SHA-256
+Signed At  : 2026-09-19 00:52:00 IST
+--------------------------------
+
+
+✓ SIGN TEST PASS
+
+┌──(bsilent㉿bsilent)-[~/Downloads]
+└─$ python dsign.py check -publickey /home/bsilent/Downloads/public_key.pem -file /home/bsilent/Downloads/test-results/signed/image_signed.jpeg
+
+
+[92m✓ SIGNATURE VALID[0m
+--------------------------------
+File      : /home/bsilent/Downloads/test-results/signed/image_signed.jpeg
+SHA-256   : 39c7350ae0264c393728bf8a381ea9a4c8f7a496dd32a8f3893b8b6b8270af9a
+Algorithm : RSA-2048 + PSS + SHA-256
+--------------------------------
+
+
+✓ ORIGINAL SIGNED FILE: VALID
+┌──(bsilent㉿bsilent)-[~/Downloads]
+└─$ cp /home/bsilent/Downloads/test-results/signed/image_signed.jpeg /home/bsilent/Downloads/test-results/renamed/image_renamed.jpeg
+
+
+┌──(bsilent㉿bsilent)-[~/Downloads]
+└─$ python dsign.py check -publickey /home/bsilent/Downloads/public_key.pem -file /home/bsilent/Downloads/test-results/renamed/image_renamed.jpeg
+
+
+[92m✓ SIGNATURE VALID[0m
+--------------------------------
+File      : /home/bsilent/Downloads/test-results/renamed/image_renamed.jpeg
+SHA-256   : 39c7350ae0264c393728bf8a381ea9a4c8f7a496dd32a8f3893b8b6b8270af9a
+Algorithm : RSA-2048 + PSS + SHA-256
+--------------------------------
+
+
+✓ RENAMED FILE: VALID
+┌──(bsilent㉿bsilent)-[~/Downloads]
+└─$ cp /home/bsilent/Downloads/test-results/renamed/image_renamed.jpeg /home/bsilent/Downloads/test-results/copied/image_copied.jpeg
+
+
+┌──(bsilent㉿bsilent)-[~/Downloads]
+└─$ python dsign.py check -publickey /home/bsilent/Downloads/public_key.pem -file /home/bsilent/Downloads/test-results/copied/image_copied.jpeg
+
+
+[92m✓ SIGNATURE VALID[0m
+--------------------------------
+File      : /home/bsilent/Downloads/test-results/copied/image_copied.jpeg
+SHA-256   : 39c7350ae0264c393728bf8a381ea9a4c8f7a496dd32a8f3893b8b6b8270af9a
+Algorithm : RSA-2048 + PSS + SHA-256
+--------------------------------
+
+
+✓ COPIED FILE: VALID
+┌──(bsilent㉿bsilent)-[~/Downloads]
+└─$ cp /home/bsilent/Downloads/test-results/copied/image_copied.jpeg /home/bsilent/Downloads/test-results/tampered/image_tampered.jpeg
+
+
+┌──(bsilent㉿bsilent)-[~/Downloads]
+└─$ python3 -c "from pathlib import Path; p=Path('/home/bsilent/Downloads/test-results/tampered/image_tampered.jpeg'); d=bytearray(p.read_bytes()); i=len(d)//2; d[i]^=1; p.write_bytes(d)"
+
+
+Expected result: SIGNATURE INVALID
+
+┌──(bsilent㉿bsilent)-[~/Downloads]
+└─$ python dsign.py check -publickey /home/bsilent/Downloads/public_key.pem -file /home/bsilent/Downloads/test-results/tampered/image_tampered.jpeg
+
+
+[91m✗ SIGNATURE INVALID[0m
+--------------------------------
+File      : /home/bsilent/Downloads/test-results/tampered/image_tampered.jpeg
+SHA-256   : ac38bd431c2ced745141993f1ae68a2dd27b27dd328d2cae34b6f69c9afb9ca1
+Algorithm : RSA-2048 + PSS + SHA-256
+--------------------------------
+
+
+✓ TAMPER TEST PASS: Modification detected.
+
+============================================================
+TESTING FILE: image.png
+============================================================
+
+┌──(bsilent㉿bsilent)-[~/Downloads]
+└─$ python dsign.py sign -privatekey /home/bsilent/Downloads/private_key.pem -file /home/bsilent/Downloads/org/testdata/image.png
+
+
+[92m✓ DIGITAL SIGNATURE CREATED[0m
+--------------------------------
+Original   : /home/bsilent/Downloads/org/testdata/image.png
+Signed     : /home/bsilent/Downloads/org/testdata/image_signed.png
+SHA-256    : a9615e1cb6f3449015b5728c6ace6b8fbbd755ca63b6d40ddef11fe03051e8bd
+Algorithm  : RSA-2048 + PSS + SHA-256
+Signed At  : 2026-09-19 00:52:01 IST
+--------------------------------
+
+
+✓ SIGN TEST PASS
+
+┌──(bsilent㉿bsilent)-[~/Downloads]
+└─$ python dsign.py check -publickey /home/bsilent/Downloads/public_key.pem -file /home/bsilent/Downloads/test-results/signed/image_signed.png
+
+
+[92m✓ SIGNATURE VALID[0m
+--------------------------------
+File      : /home/bsilent/Downloads/test-results/signed/image_signed.png
+SHA-256   : a9615e1cb6f3449015b5728c6ace6b8fbbd755ca63b6d40ddef11fe03051e8bd
+Algorithm : RSA-2048 + PSS + SHA-256
+--------------------------------
+
+
+✓ ORIGINAL SIGNED FILE: VALID
+┌──(bsilent㉿bsilent)-[~/Downloads]
+└─$ cp /home/bsilent/Downloads/test-results/signed/image_signed.png /home/bsilent/Downloads/test-results/renamed/image_renamed.png
+
+
+┌──(bsilent㉿bsilent)-[~/Downloads]
+└─$ python dsign.py check -publickey /home/bsilent/Downloads/public_key.pem -file /home/bsilent/Downloads/test-results/renamed/image_renamed.png
+
+
+[92m✓ SIGNATURE VALID[0m
+--------------------------------
+File      : /home/bsilent/Downloads/test-results/renamed/image_renamed.png
+SHA-256   : a9615e1cb6f3449015b5728c6ace6b8fbbd755ca63b6d40ddef11fe03051e8bd
+Algorithm : RSA-2048 + PSS + SHA-256
+--------------------------------
+
+
+✓ RENAMED FILE: VALID
+┌──(bsilent㉿bsilent)-[~/Downloads]
+└─$ cp /home/bsilent/Downloads/test-results/renamed/image_renamed.png /home/bsilent/Downloads/test-results/copied/image_copied.png
+
+
+┌──(bsilent㉿bsilent)-[~/Downloads]
+└─$ python dsign.py check -publickey /home/bsilent/Downloads/public_key.pem -file /home/bsilent/Downloads/test-results/copied/image_copied.png
+
+
+[92m✓ SIGNATURE VALID[0m
+--------------------------------
+File      : /home/bsilent/Downloads/test-results/copied/image_copied.png
+SHA-256   : a9615e1cb6f3449015b5728c6ace6b8fbbd755ca63b6d40ddef11fe03051e8bd
+Algorithm : RSA-2048 + PSS + SHA-256
+--------------------------------
+
+
+✓ COPIED FILE: VALID
+┌──(bsilent㉿bsilent)-[~/Downloads]
+└─$ cp /home/bsilent/Downloads/test-results/copied/image_copied.png /home/bsilent/Downloads/test-results/tampered/image_tampered.png
+
+
+┌──(bsilent㉿bsilent)-[~/Downloads]
+└─$ python3 -c "from pathlib import Path; p=Path('/home/bsilent/Downloads/test-results/tampered/image_tampered.png'); d=bytearray(p.read_bytes()); i=len(d)//2; d[i]^=1; p.write_bytes(d)"
+
+
+Expected result: SIGNATURE INVALID
+
+┌──(bsilent㉿bsilent)-[~/Downloads]
+└─$ python dsign.py check -publickey /home/bsilent/Downloads/public_key.pem -file /home/bsilent/Downloads/test-results/tampered/image_tampered.png
+
+
+[91m✗ SIGNATURE INVALID[0m
+--------------------------------
+File      : /home/bsilent/Downloads/test-results/tampered/image_tampered.png
+SHA-256   : df109d6eaad05d98ec30fc0b23e989004e34c33ab99f7ed600a201d771f64ea1
+Algorithm : RSA-2048 + PSS + SHA-256
+--------------------------------
+
+
+✓ TAMPER TEST PASS: Modification detected.
+
+============================================================
+TESTING FILE: image.gif
+============================================================
+
+┌──(bsilent㉿bsilent)-[~/Downloads]
+└─$ python dsign.py sign -privatekey /home/bsilent/Downloads/private_key.pem -file /home/bsilent/Downloads/org/testdata/image.gif
+
+
+[92m✓ DIGITAL SIGNATURE CREATED[0m
+--------------------------------
+Original   : /home/bsilent/Downloads/org/testdata/image.gif
+Signed     : /home/bsilent/Downloads/org/testdata/image_signed.gif
+SHA-256    : 4e503ec619133c679dc1cb0ba860e255193d59265b3892106b677212d6ecd645
+Algorithm  : RSA-2048 + PSS + SHA-256
+Signed At  : 2026-09-19 00:52:01 IST
+--------------------------------
+
+
+✓ SIGN TEST PASS
+
+┌──(bsilent㉿bsilent)-[~/Downloads]
+└─$ python dsign.py check -publickey /home/bsilent/Downloads/public_key.pem -file /home/bsilent/Downloads/test-results/signed/image_signed.gif
+
+
+[92m✓ SIGNATURE VALID[0m
+--------------------------------
+File      : /home/bsilent/Downloads/test-results/signed/image_signed.gif
+SHA-256   : 4e503ec619133c679dc1cb0ba860e255193d59265b3892106b677212d6ecd645
+Algorithm : RSA-2048 + PSS + SHA-256
+--------------------------------
+
+
+✓ ORIGINAL SIGNED FILE: VALID
+┌──(bsilent㉿bsilent)-[~/Downloads]
+└─$ cp /home/bsilent/Downloads/test-results/signed/image_signed.gif /home/bsilent/Downloads/test-results/renamed/image_renamed.gif
+
+
+┌──(bsilent㉿bsilent)-[~/Downloads]
+└─$ python dsign.py check -publickey /home/bsilent/Downloads/public_key.pem -file /home/bsilent/Downloads/test-results/renamed/image_renamed.gif
+
+
+[92m✓ SIGNATURE VALID[0m
+--------------------------------
+File      : /home/bsilent/Downloads/test-results/renamed/image_renamed.gif
+SHA-256   : 4e503ec619133c679dc1cb0ba860e255193d59265b3892106b677212d6ecd645
+Algorithm : RSA-2048 + PSS + SHA-256
+--------------------------------
+
+
+✓ RENAMED FILE: VALID
+┌──(bsilent㉿bsilent)-[~/Downloads]
+└─$ cp /home/bsilent/Downloads/test-results/renamed/image_renamed.gif /home/bsilent/Downloads/test-results/copied/image_copied.gif
+
+
+┌──(bsilent㉿bsilent)-[~/Downloads]
+└─$ python dsign.py check -publickey /home/bsilent/Downloads/public_key.pem -file /home/bsilent/Downloads/test-results/copied/image_copied.gif
+
+
+[92m✓ SIGNATURE VALID[0m
+--------------------------------
+File      : /home/bsilent/Downloads/test-results/copied/image_copied.gif
+SHA-256   : 4e503ec619133c679dc1cb0ba860e255193d59265b3892106b677212d6ecd645
+Algorithm : RSA-2048 + PSS + SHA-256
+--------------------------------
+
+
+✓ COPIED FILE: VALID
+┌──(bsilent㉿bsilent)-[~/Downloads]
+└─$ cp /home/bsilent/Downloads/test-results/copied/image_copied.gif /home/bsilent/Downloads/test-results/tampered/image_tampered.gif
+
+
+┌──(bsilent㉿bsilent)-[~/Downloads]
+└─$ python3 -c "from pathlib import Path; p=Path('/home/bsilent/Downloads/test-results/tampered/image_tampered.gif'); d=bytearray(p.read_bytes()); i=len(d)//2; d[i]^=1; p.write_bytes(d)"
+
+
+Expected result: SIGNATURE INVALID
+
+┌──(bsilent㉿bsilent)-[~/Downloads]
+└─$ python dsign.py check -publickey /home/bsilent/Downloads/public_key.pem -file /home/bsilent/Downloads/test-results/tampered/image_tampered.gif
+
+
+[91m✗ SIGNATURE INVALID[0m
+--------------------------------
+File      : /home/bsilent/Downloads/test-results/tampered/image_tampered.gif
+SHA-256   : 67f6f8dc7c5c464b5ffe026096ca2bac5778df5e19a1a3943dda36b57a59b5ba
+Algorithm : RSA-2048 + PSS + SHA-256
+--------------------------------
+
+
+✓ TAMPER TEST PASS: Modification detected.
+
+============================================================
+TESTING FILE: image.bmp
+============================================================
+
+┌──(bsilent㉿bsilent)-[~/Downloads]
+└─$ python dsign.py sign -privatekey /home/bsilent/Downloads/private_key.pem -file /home/bsilent/Downloads/org/testdata/image.bmp
+
+
+[92m✓ DIGITAL SIGNATURE CREATED[0m
+--------------------------------
+Original   : /home/bsilent/Downloads/org/testdata/image.bmp
+Signed     : /home/bsilent/Downloads/org/testdata/image_signed.bmp
+SHA-256    : edc6d08978b1425f658add77994496c38a10e21e5b9b04fa3fc40c18ff23b467
+Algorithm  : RSA-2048 + PSS + SHA-256
+Signed At  : 2026-09-19 00:52:01 IST
+--------------------------------
+
+
+✓ SIGN TEST PASS
+
+┌──(bsilent㉿bsilent)-[~/Downloads]
+└─$ python dsign.py check -publickey /home/bsilent/Downloads/public_key.pem -file /home/bsilent/Downloads/test-results/signed/image_signed.bmp
+
+
+[92m✓ SIGNATURE VALID[0m
+--------------------------------
+File      : /home/bsilent/Downloads/test-results/signed/image_signed.bmp
+SHA-256   : edc6d08978b1425f658add77994496c38a10e21e5b9b04fa3fc40c18ff23b467
+Algorithm : RSA-2048 + PSS + SHA-256
+--------------------------------
+
+
+✓ ORIGINAL SIGNED FILE: VALID
+┌──(bsilent㉿bsilent)-[~/Downloads]
+└─$ cp /home/bsilent/Downloads/test-results/signed/image_signed.bmp /home/bsilent/Downloads/test-results/renamed/image_renamed.bmp
+
+
+┌──(bsilent㉿bsilent)-[~/Downloads]
+└─$ python dsign.py check -publickey /home/bsilent/Downloads/public_key.pem -file /home/bsilent/Downloads/test-results/renamed/image_renamed.bmp
+
+
+[92m✓ SIGNATURE VALID[0m
+--------------------------------
+File      : /home/bsilent/Downloads/test-results/renamed/image_renamed.bmp
+SHA-256   : edc6d08978b1425f658add77994496c38a10e21e5b9b04fa3fc40c18ff23b467
+Algorithm : RSA-2048 + PSS + SHA-256
+--------------------------------
+
+
+✓ RENAMED FILE: VALID
+┌──(bsilent㉿bsilent)-[~/Downloads]
+└─$ cp /home/bsilent/Downloads/test-results/renamed/image_renamed.bmp /home/bsilent/Downloads/test-results/copied/image_copied.bmp
+
+
+┌──(bsilent㉿bsilent)-[~/Downloads]
+└─$ python dsign.py check -publickey /home/bsilent/Downloads/public_key.pem -file /home/bsilent/Downloads/test-results/copied/image_copied.bmp
+
+
+[92m✓ SIGNATURE VALID[0m
+--------------------------------
+File      : /home/bsilent/Downloads/test-results/copied/image_copied.bmp
+SHA-256   : edc6d08978b1425f658add77994496c38a10e21e5b9b04fa3fc40c18ff23b467
+Algorithm : RSA-2048 + PSS + SHA-256
+--------------------------------
+
+
+✓ COPIED FILE: VALID
+┌──(bsilent㉿bsilent)-[~/Downloads]
+└─$ cp /home/bsilent/Downloads/test-results/copied/image_copied.bmp /home/bsilent/Downloads/test-results/tampered/image_tampered.bmp
+
+
+┌──(bsilent㉿bsilent)-[~/Downloads]
+└─$ python3 -c "from pathlib import Path; p=Path('/home/bsilent/Downloads/test-results/tampered/image_tampered.bmp'); d=bytearray(p.read_bytes()); i=len(d)//2; d[i]^=1; p.write_bytes(d)"
+
+
+Expected result: SIGNATURE INVALID
+
+┌──(bsilent㉿bsilent)-[~/Downloads]
+└─$ python dsign.py check -publickey /home/bsilent/Downloads/public_key.pem -file /home/bsilent/Downloads/test-results/tampered/image_tampered.bmp
+
+
+[91m✗ SIGNATURE INVALID[0m
+--------------------------------
+File      : /home/bsilent/Downloads/test-results/tampered/image_tampered.bmp
+SHA-256   : 5818cdad5fab2ec4fe28f81f4cdd98f43f0defa27ef31f8bfc54ab3d2463725f
+Algorithm : RSA-2048 + PSS + SHA-256
+--------------------------------
+
+
+✓ TAMPER TEST PASS: Modification detected.
+
+============================================================
+TESTING FILE: document.pdf
+============================================================
+
+┌──(bsilent㉿bsilent)-[~/Downloads]
+└─$ python dsign.py sign -privatekey /home/bsilent/Downloads/private_key.pem -file /home/bsilent/Downloads/org/testdata/document.pdf
+
+
+[92m✓ DIGITAL SIGNATURE CREATED[0m
+--------------------------------
+Original   : /home/bsilent/Downloads/org/testdata/document.pdf
+Signed     : /home/bsilent/Downloads/org/testdata/document_signed.pdf
+SHA-256    : f5c28da9e449e11659bd27b2dc62c379237f780ba12e158f5fc26b30ee6b0c16
+Algorithm  : RSA-2048 + PSS + SHA-256
+Signed At  : 2026-09-19 00:52:02 IST
+--------------------------------
+
+
+✓ SIGN TEST PASS
+
+┌──(bsilent㉿bsilent)-[~/Downloads]
+└─$ python dsign.py check -publickey /home/bsilent/Downloads/public_key.pem -file /home/bsilent/Downloads/test-results/signed/document_signed.pdf
+
+
+[92m✓ SIGNATURE VALID[0m
+--------------------------------
+File      : /home/bsilent/Downloads/test-results/signed/document_signed.pdf
+SHA-256   : f5c28da9e449e11659bd27b2dc62c379237f780ba12e158f5fc26b30ee6b0c16
+Algorithm : RSA-2048 + PSS + SHA-256
+--------------------------------
+
+
+✓ ORIGINAL SIGNED FILE: VALID
+┌──(bsilent㉿bsilent)-[~/Downloads]
+└─$ cp /home/bsilent/Downloads/test-results/signed/document_signed.pdf /home/bsilent/Downloads/test-results/renamed/document_renamed.pdf
+
+
+┌──(bsilent㉿bsilent)-[~/Downloads]
+└─$ python dsign.py check -publickey /home/bsilent/Downloads/public_key.pem -file /home/bsilent/Downloads/test-results/renamed/document_renamed.pdf
+
+
+[92m✓ SIGNATURE VALID[0m
+--------------------------------
+File      : /home/bsilent/Downloads/test-results/renamed/document_renamed.pdf
+SHA-256   : f5c28da9e449e11659bd27b2dc62c379237f780ba12e158f5fc26b30ee6b0c16
+Algorithm : RSA-2048 + PSS + SHA-256
+--------------------------------
+
+
+✓ RENAMED FILE: VALID
+┌──(bsilent㉿bsilent)-[~/Downloads]
+└─$ cp /home/bsilent/Downloads/test-results/renamed/document_renamed.pdf /home/bsilent/Downloads/test-results/copied/document_copied.pdf
+
+
+┌──(bsilent㉿bsilent)-[~/Downloads]
+└─$ python dsign.py check -publickey /home/bsilent/Downloads/public_key.pem -file /home/bsilent/Downloads/test-results/copied/document_copied.pdf
+
+
+[92m✓ SIGNATURE VALID[0m
+--------------------------------
+File      : /home/bsilent/Downloads/test-results/copied/document_copied.pdf
+SHA-256   : f5c28da9e449e11659bd27b2dc62c379237f780ba12e158f5fc26b30ee6b0c16
+Algorithm : RSA-2048 + PSS + SHA-256
+--------------------------------
+
+
+✓ COPIED FILE: VALID
+┌──(bsilent㉿bsilent)-[~/Downloads]
+└─$ cp /home/bsilent/Downloads/test-results/copied/document_copied.pdf /home/bsilent/Downloads/test-results/tampered/document_tampered.pdf
+
+
+┌──(bsilent㉿bsilent)-[~/Downloads]
+└─$ python3 -c "from pathlib import Path; p=Path('/home/bsilent/Downloads/test-results/tampered/document_tampered.pdf'); d=bytearray(p.read_bytes()); i=len(d)//2; d[i]^=1; p.write_bytes(d)"
+
+
+Expected result: SIGNATURE INVALID
+
+┌──(bsilent㉿bsilent)-[~/Downloads]
+└─$ python dsign.py check -publickey /home/bsilent/Downloads/public_key.pem -file /home/bsilent/Downloads/test-results/tampered/document_tampered.pdf
+
+
+[91m✗ SIGNATURE INVALID[0m
+--------------------------------
+File      : /home/bsilent/Downloads/test-results/tampered/document_tampered.pdf
+SHA-256   : e7c704122994404d470ce11cd0ce7a3dbde9884992dba59abe6bcf1bdf724b23
+Algorithm : RSA-2048 + PSS + SHA-256
+--------------------------------
+
+
+✓ TAMPER TEST PASS: Modification detected.
+
+============================================================
+TESTING FILE: document.docx
+============================================================
+
+┌──(bsilent㉿bsilent)-[~/Downloads]
+└─$ python dsign.py sign -privatekey /home/bsilent/Downloads/private_key.pem -file /home/bsilent/Downloads/org/testdata/document.docx
+
+
+[92m✓ DIGITAL SIGNATURE CREATED[0m
+--------------------------------
+Original   : /home/bsilent/Downloads/org/testdata/document.docx
+Signed     : /home/bsilent/Downloads/org/testdata/document_signed.docx
+SHA-256    : 8c727eb5a65f63a40a743e0c34137c01aa26cfddddc0d39cddda0f7ee5a3bf86
+Algorithm  : RSA-2048 + PSS + SHA-256
+Signed At  : 2026-09-19 00:52:02 IST
+--------------------------------
+
+
+✓ SIGN TEST PASS
+
+┌──(bsilent㉿bsilent)-[~/Downloads]
+└─$ python dsign.py check -publickey /home/bsilent/Downloads/public_key.pem -file /home/bsilent/Downloads/test-results/signed/document_signed.docx
+
+
+[92m✓ SIGNATURE VALID[0m
+--------------------------------
+File      : /home/bsilent/Downloads/test-results/signed/document_signed.docx
+SHA-256   : 8c727eb5a65f63a40a743e0c34137c01aa26cfddddc0d39cddda0f7ee5a3bf86
+Algorithm : RSA-2048 + PSS + SHA-256
+--------------------------------
+
+
+✓ ORIGINAL SIGNED FILE: VALID
+┌──(bsilent㉿bsilent)-[~/Downloads]
+└─$ cp /home/bsilent/Downloads/test-results/signed/document_signed.docx /home/bsilent/Downloads/test-results/renamed/document_renamed.docx
+
+
+┌──(bsilent㉿bsilent)-[~/Downloads]
+└─$ python dsign.py check -publickey /home/bsilent/Downloads/public_key.pem -file /home/bsilent/Downloads/test-results/renamed/document_renamed.docx
+
+
+[92m✓ SIGNATURE VALID[0m
+--------------------------------
+File      : /home/bsilent/Downloads/test-results/renamed/document_renamed.docx
+SHA-256   : 8c727eb5a65f63a40a743e0c34137c01aa26cfddddc0d39cddda0f7ee5a3bf86
+Algorithm : RSA-2048 + PSS + SHA-256
+--------------------------------
+
+
+✓ RENAMED FILE: VALID
+┌──(bsilent㉿bsilent)-[~/Downloads]
+└─$ cp /home/bsilent/Downloads/test-results/renamed/document_renamed.docx /home/bsilent/Downloads/test-results/copied/document_copied.docx
+
+
+┌──(bsilent㉿bsilent)-[~/Downloads]
+└─$ python dsign.py check -publickey /home/bsilent/Downloads/public_key.pem -file /home/bsilent/Downloads/test-results/copied/document_copied.docx
+
+
+[92m✓ SIGNATURE VALID[0m
+--------------------------------
+File      : /home/bsilent/Downloads/test-results/copied/document_copied.docx
+SHA-256   : 8c727eb5a65f63a40a743e0c34137c01aa26cfddddc0d39cddda0f7ee5a3bf86
+Algorithm : RSA-2048 + PSS + SHA-256
+--------------------------------
+
+
+✓ COPIED FILE: VALID
+┌──(bsilent㉿bsilent)-[~/Downloads]
+└─$ cp /home/bsilent/Downloads/test-results/copied/document_copied.docx /home/bsilent/Downloads/test-results/tampered/document_tampered.docx
+
+
+┌──(bsilent㉿bsilent)-[~/Downloads]
+└─$ python3 -c "from pathlib import Path; p=Path('/home/bsilent/Downloads/test-results/tampered/document_tampered.docx'); d=bytearray(p.read_bytes()); i=len(d)//2; d[i]^=1; p.write_bytes(d)"
+
+
+Expected result: SIGNATURE INVALID
+
+┌──(bsilent㉿bsilent)-[~/Downloads]
+└─$ python dsign.py check -publickey /home/bsilent/Downloads/public_key.pem -file /home/bsilent/Downloads/test-results/tampered/document_tampered.docx
+
+
+[91m✗ SIGNATURE INVALID[0m
+--------------------------------
+File      : /home/bsilent/Downloads/test-results/tampered/document_tampered.docx
+SHA-256   : a207c57ff9071a6430b18c76c6f572b1563337744ed2ba3b0ad154f74e996188
+Algorithm : RSA-2048 + PSS + SHA-256
+--------------------------------
+
+
+✓ TAMPER TEST PASS: Modification detected.
+
+============================================================
+TESTING FILE: spreadsheet.xlsx
+============================================================
+
+┌──(bsilent㉿bsilent)-[~/Downloads]
+└─$ python dsign.py sign -privatekey /home/bsilent/Downloads/private_key.pem -file /home/bsilent/Downloads/org/testdata/spreadsheet.xlsx
+
+
+[92m✓ DIGITAL SIGNATURE CREATED[0m
+--------------------------------
+Original   : /home/bsilent/Downloads/org/testdata/spreadsheet.xlsx
+Signed     : /home/bsilent/Downloads/org/testdata/spreadsheet_signed.xlsx
+SHA-256    : bcff49d8f1f76515eaf05ab723950178c20fb297bcedf6c55942e989af7e9cbb
+Algorithm  : RSA-2048 + PSS + SHA-256
+Signed At  : 2026-09-19 00:52:02 IST
+--------------------------------
+
+
+✓ SIGN TEST PASS
+
+┌──(bsilent㉿bsilent)-[~/Downloads]
+└─$ python dsign.py check -publickey /home/bsilent/Downloads/public_key.pem -file /home/bsilent/Downloads/test-results/signed/spreadsheet_signed.xlsx
+
+
+[92m✓ SIGNATURE VALID[0m
+--------------------------------
+File      : /home/bsilent/Downloads/test-results/signed/spreadsheet_signed.xlsx
+SHA-256   : bcff49d8f1f76515eaf05ab723950178c20fb297bcedf6c55942e989af7e9cbb
+Algorithm : RSA-2048 + PSS + SHA-256
+--------------------------------
+
+
+✓ ORIGINAL SIGNED FILE: VALID
+┌──(bsilent㉿bsilent)-[~/Downloads]
+└─$ cp /home/bsilent/Downloads/test-results/signed/spreadsheet_signed.xlsx /home/bsilent/Downloads/test-results/renamed/spreadsheet_renamed.xlsx
+
+
+┌──(bsilent㉿bsilent)-[~/Downloads]
+└─$ python dsign.py check -publickey /home/bsilent/Downloads/public_key.pem -file /home/bsilent/Downloads/test-results/renamed/spreadsheet_renamed.xlsx
+
+
+[92m✓ SIGNATURE VALID[0m
+--------------------------------
+File      : /home/bsilent/Downloads/test-results/renamed/spreadsheet_renamed.xlsx
+SHA-256   : bcff49d8f1f76515eaf05ab723950178c20fb297bcedf6c55942e989af7e9cbb
+Algorithm : RSA-2048 + PSS + SHA-256
+--------------------------------
+
+
+✓ RENAMED FILE: VALID
+┌──(bsilent㉿bsilent)-[~/Downloads]
+└─$ cp /home/bsilent/Downloads/test-results/renamed/spreadsheet_renamed.xlsx /home/bsilent/Downloads/test-results/copied/spreadsheet_copied.xlsx
+
+
+┌──(bsilent㉿bsilent)-[~/Downloads]
+└─$ python dsign.py check -publickey /home/bsilent/Downloads/public_key.pem -file /home/bsilent/Downloads/test-results/copied/spreadsheet_copied.xlsx
+
+
+[92m✓ SIGNATURE VALID[0m
+--------------------------------
+File      : /home/bsilent/Downloads/test-results/copied/spreadsheet_copied.xlsx
+SHA-256   : bcff49d8f1f76515eaf05ab723950178c20fb297bcedf6c55942e989af7e9cbb
+Algorithm : RSA-2048 + PSS + SHA-256
+--------------------------------
+
+
+✓ COPIED FILE: VALID
+┌──(bsilent㉿bsilent)-[~/Downloads]
+└─$ cp /home/bsilent/Downloads/test-results/copied/spreadsheet_copied.xlsx /home/bsilent/Downloads/test-results/tampered/spreadsheet_tampered.xlsx
+
+
+┌──(bsilent㉿bsilent)-[~/Downloads]
+└─$ python3 -c "from pathlib import Path; p=Path('/home/bsilent/Downloads/test-results/tampered/spreadsheet_tampered.xlsx'); d=bytearray(p.read_bytes()); i=len(d)//2; d[i]^=1; p.write_bytes(d)"
+
+
+Expected result: SIGNATURE INVALID
+
+┌──(bsilent㉿bsilent)-[~/Downloads]
+└─$ python dsign.py check -publickey /home/bsilent/Downloads/public_key.pem -file /home/bsilent/Downloads/test-results/tampered/spreadsheet_tampered.xlsx
+
+
+[91m✗ SIGNATURE INVALID[0m
+--------------------------------
+File      : /home/bsilent/Downloads/test-results/tampered/spreadsheet_tampered.xlsx
+SHA-256   : bdc733b637fd18c9242cd6cf0ee98c22c93ff99044a0914887fe8fd78eb78858
+Algorithm : RSA-2048 + PSS + SHA-256
+--------------------------------
+
+
+✓ TAMPER TEST PASS: Modification detected.
+
+============================================================
+TESTING FILE: presentation.pptx
+============================================================
+
+┌──(bsilent㉿bsilent)-[~/Downloads]
+└─$ python dsign.py sign -privatekey /home/bsilent/Downloads/private_key.pem -file /home/bsilent/Downloads/org/testdata/presentation.pptx
+
+
+[92m✓ DIGITAL SIGNATURE CREATED[0m
+--------------------------------
+Original   : /home/bsilent/Downloads/org/testdata/presentation.pptx
+Signed     : /home/bsilent/Downloads/org/testdata/presentation_signed.pptx
+SHA-256    : fb943dcd31218a0607c79c366dd81a08e99ae9f210e2fc4bb9d69d5924b5dddb
+Algorithm  : RSA-2048 + PSS + SHA-256
+Signed At  : 2026-09-19 00:52:03 IST
+--------------------------------
+
+
+✓ SIGN TEST PASS
+
+┌──(bsilent㉿bsilent)-[~/Downloads]
+└─$ python dsign.py check -publickey /home/bsilent/Downloads/public_key.pem -file /home/bsilent/Downloads/test-results/signed/presentation_signed.pptx
+
+
+[92m✓ SIGNATURE VALID[0m
+--------------------------------
+File      : /home/bsilent/Downloads/test-results/signed/presentation_signed.pptx
+SHA-256   : fb943dcd31218a0607c79c366dd81a08e99ae9f210e2fc4bb9d69d5924b5dddb
+Algorithm : RSA-2048 + PSS + SHA-256
+--------------------------------
+
+
+✓ ORIGINAL SIGNED FILE: VALID
+┌──(bsilent㉿bsilent)-[~/Downloads]
+└─$ cp /home/bsilent/Downloads/test-results/signed/presentation_signed.pptx /home/bsilent/Downloads/test-results/renamed/presentation_renamed.pptx
+
+
+┌──(bsilent㉿bsilent)-[~/Downloads]
+└─$ python dsign.py check -publickey /home/bsilent/Downloads/public_key.pem -file /home/bsilent/Downloads/test-results/renamed/presentation_renamed.pptx
+
+
+[92m✓ SIGNATURE VALID[0m
+--------------------------------
+File      : /home/bsilent/Downloads/test-results/renamed/presentation_renamed.pptx
+SHA-256   : fb943dcd31218a0607c79c366dd81a08e99ae9f210e2fc4bb9d69d5924b5dddb
+Algorithm : RSA-2048 + PSS + SHA-256
+--------------------------------
+
+
+✓ RENAMED FILE: VALID
+┌──(bsilent㉿bsilent)-[~/Downloads]
+└─$ cp /home/bsilent/Downloads/test-results/renamed/presentation_renamed.pptx /home/bsilent/Downloads/test-results/copied/presentation_copied.pptx
+
+
+┌──(bsilent㉿bsilent)-[~/Downloads]
+└─$ python dsign.py check -publickey /home/bsilent/Downloads/public_key.pem -file /home/bsilent/Downloads/test-results/copied/presentation_copied.pptx
+
+
+[92m✓ SIGNATURE VALID[0m
+--------------------------------
+File      : /home/bsilent/Downloads/test-results/copied/presentation_copied.pptx
+SHA-256   : fb943dcd31218a0607c79c366dd81a08e99ae9f210e2fc4bb9d69d5924b5dddb
+Algorithm : RSA-2048 + PSS + SHA-256
+--------------------------------
+
+
+✓ COPIED FILE: VALID
+┌──(bsilent㉿bsilent)-[~/Downloads]
+└─$ cp /home/bsilent/Downloads/test-results/copied/presentation_copied.pptx /home/bsilent/Downloads/test-results/tampered/presentation_tampered.pptx
+
+
+┌──(bsilent㉿bsilent)-[~/Downloads]
+└─$ python3 -c "from pathlib import Path; p=Path('/home/bsilent/Downloads/test-results/tampered/presentation_tampered.pptx'); d=bytearray(p.read_bytes()); i=len(d)//2; d[i]^=1; p.write_bytes(d)"
+
+
+Expected result: SIGNATURE INVALID
+
+┌──(bsilent㉿bsilent)-[~/Downloads]
+└─$ python dsign.py check -publickey /home/bsilent/Downloads/public_key.pem -file /home/bsilent/Downloads/test-results/tampered/presentation_tampered.pptx
+
+
+[91m✗ SIGNATURE INVALID[0m
+--------------------------------
+File      : /home/bsilent/Downloads/test-results/tampered/presentation_tampered.pptx
+SHA-256   : e1a640e171b59b3e14ead6d6712b555a0ec5c873e4525feaabaf8a581be7f45e
+Algorithm : RSA-2048 + PSS + SHA-256
+--------------------------------
+
+
+✓ TAMPER TEST PASS: Modification detected.
+
+============================================================
+TESTING FILE: archive.zip
+============================================================
+
+┌──(bsilent㉿bsilent)-[~/Downloads]
+└─$ python dsign.py sign -privatekey /home/bsilent/Downloads/private_key.pem -file /home/bsilent/Downloads/org/testdata/archive.zip
+
+
+[92m✓ DIGITAL SIGNATURE CREATED[0m
+--------------------------------
+Original   : /home/bsilent/Downloads/org/testdata/archive.zip
+Signed     : /home/bsilent/Downloads/org/testdata/archive_signed.zip
+SHA-256    : 98daf72958174a43c319afc07e0c39dcaaf5688f2a09fdf83ccb867ac6084bf9
+Algorithm  : RSA-2048 + PSS + SHA-256
+Signed At  : 2026-09-19 00:52:03 IST
+--------------------------------
+
+
+✓ SIGN TEST PASS
+
+┌──(bsilent㉿bsilent)-[~/Downloads]
+└─$ python dsign.py check -publickey /home/bsilent/Downloads/public_key.pem -file /home/bsilent/Downloads/test-results/signed/archive_signed.zip
+
+
+[92m✓ SIGNATURE VALID[0m
+--------------------------------
+File      : /home/bsilent/Downloads/test-results/signed/archive_signed.zip
+SHA-256   : 98daf72958174a43c319afc07e0c39dcaaf5688f2a09fdf83ccb867ac6084bf9
+Algorithm : RSA-2048 + PSS + SHA-256
+--------------------------------
+
+
+✓ ORIGINAL SIGNED FILE: VALID
+┌──(bsilent㉿bsilent)-[~/Downloads]
+└─$ cp /home/bsilent/Downloads/test-results/signed/archive_signed.zip /home/bsilent/Downloads/test-results/renamed/archive_renamed.zip
+
+
+┌──(bsilent㉿bsilent)-[~/Downloads]
+└─$ python dsign.py check -publickey /home/bsilent/Downloads/public_key.pem -file /home/bsilent/Downloads/test-results/renamed/archive_renamed.zip
+
+
+[92m✓ SIGNATURE VALID[0m
+--------------------------------
+File      : /home/bsilent/Downloads/test-results/renamed/archive_renamed.zip
+SHA-256   : 98daf72958174a43c319afc07e0c39dcaaf5688f2a09fdf83ccb867ac6084bf9
+Algorithm : RSA-2048 + PSS + SHA-256
+--------------------------------
+
+
+✓ RENAMED FILE: VALID
+┌──(bsilent㉿bsilent)-[~/Downloads]
+└─$ cp /home/bsilent/Downloads/test-results/renamed/archive_renamed.zip /home/bsilent/Downloads/test-results/copied/archive_copied.zip
+
+
+┌──(bsilent㉿bsilent)-[~/Downloads]
+└─$ python dsign.py check -publickey /home/bsilent/Downloads/public_key.pem -file /home/bsilent/Downloads/test-results/copied/archive_copied.zip
+
+
+[92m✓ SIGNATURE VALID[0m
+--------------------------------
+File      : /home/bsilent/Downloads/test-results/copied/archive_copied.zip
+SHA-256   : 98daf72958174a43c319afc07e0c39dcaaf5688f2a09fdf83ccb867ac6084bf9
+Algorithm : RSA-2048 + PSS + SHA-256
+--------------------------------
+
+
+✓ COPIED FILE: VALID
+┌──(bsilent㉿bsilent)-[~/Downloads]
+└─$ cp /home/bsilent/Downloads/test-results/copied/archive_copied.zip /home/bsilent/Downloads/test-results/tampered/archive_tampered.zip
+
+
+┌──(bsilent㉿bsilent)-[~/Downloads]
+└─$ python3 -c "from pathlib import Path; p=Path('/home/bsilent/Downloads/test-results/tampered/archive_tampered.zip'); d=bytearray(p.read_bytes()); i=len(d)//2; d[i]^=1; p.write_bytes(d)"
+
+
+Expected result: SIGNATURE INVALID
+
+┌──(bsilent㉿bsilent)-[~/Downloads]
+└─$ python dsign.py check -publickey /home/bsilent/Downloads/public_key.pem -file /home/bsilent/Downloads/test-results/tampered/archive_tampered.zip
+
+
+[91m✗ SIGNATURE INVALID[0m
+--------------------------------
+File      : /home/bsilent/Downloads/test-results/tampered/archive_tampered.zip
+SHA-256   : 98daf72958174a43c319afc07e0c39dcaaf5688f2a09fdf83ccb867ac6084bf9
+Algorithm : RSA-2048 + PSS + SHA-256
+--------------------------------
+
+
+✓ TAMPER TEST PASS: Modification detected.
+
+============================================================
+UNSUPPORTED FILE TEST
+============================================================
+┌──(bsilent㉿bsilent)-[~/Downloads]
+└─$ python dsign.py sign -privatekey /home/bsilent/Downloads/private_key.pem -file /home/bsilent/Downloads/org/testdata/README.txt
+[EXPECTED] Unsupported file type should be rejected.
+
+
+[91m✗ ERROR: Unsupported file type '.txt'. Supported types: .bmp, .docx, .gif, .jpeg, .jpg, .pdf, .png, .pptx, .xlsx, .zip[0m
+
+✓ UNSUPPORTED FILE REJECTED
+
+============================================================
+FINAL TEST DIRECTORY TREE
+============================================================
+
+┌──(bsilent㉿bsilent)-[~/Downloads]
+└─$ tree ~/Downloads/test-results
+
+/home/bsilent/Downloads/test-results
+├── copied
+│   ├── archive_copied.zip
+│   ├── document_copied.docx
+│   ├── document_copied.pdf
+│   ├── image_copied.bmp
+│   ├── image_copied.gif
+│   ├── image_copied.jpeg
+│   ├── image_copied.jpg
+│   ├── image_copied.png
+│   ├── presentation_copied.pptx
+│   └── spreadsheet_copied.xlsx
+├── renamed
+│   ├── archive_renamed.zip
+│   ├── document_renamed.docx
+│   ├── document_renamed.pdf
+│   ├── image_renamed.bmp
+│   ├── image_renamed.gif
+│   ├── image_renamed.jpeg
+│   ├── image_renamed.jpg
+│   ├── image_renamed.png
+│   ├── presentation_renamed.pptx
+│   └── spreadsheet_renamed.xlsx
+├── signed
+│   ├── archive_signed.zip
+│   ├── document_signed.docx
+│   ├── document_signed.pdf
+│   ├── image_signed.bmp
+│   ├── image_signed.gif
+│   ├── image_signed.jpeg
+│   ├── image_signed.jpg
+│   ├── image_signed.png
+│   ├── presentation_signed.pptx
+│   └── spreadsheet_signed.xlsx
+├── tampered
+│   ├── archive_tampered.zip
+│   ├── document_tampered.docx
+│   ├── document_tampered.pdf
+│   ├── image_tampered.bmp
+│   ├── image_tampered.gif
+│   ├── image_tampered.jpeg
+│   ├── image_tampered.jpg
+│   ├── image_tampered.png
+│   ├── presentation_tampered.pptx
+│   └── spreadsheet_tampered.xlsx
+└── test_all.log
+
+5 directories, 41 files
+
+============================================================
+                    TEST SUMMARY
+============================================================
+
+PASS : 51
+FAIL : 0
+SKIP : 0
+
+Complete log:
+/home/bsilent/Downloads/test-results/test_all.log
+============================================================
