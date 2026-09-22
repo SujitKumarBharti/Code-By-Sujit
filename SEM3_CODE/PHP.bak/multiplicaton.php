@@ -6,4 +6,4 @@ for ($init; $init<=10; $init++) {
     echo $number . 'x' . $init . '=' . $result . '<br>';
 }
 
-?> test
+?>
