@@ -1,872 +1,194 @@
-#!/usr/bin/env python3
-
-import argparse
-import hashlib
-import struct
-import sys
+import argparse, hashlib, struct, sys
 from datetime import datetime
 from pathlib import Path
-
 from cryptography.hazmat.primitives import hashes, serialization
 from cryptography.hazmat.primitives.asymmetric import padding
 from cryptography.exceptions import InvalidSignature
-
-
-# ============================================================
-# CONFIGURATION
-# ============================================================
-
 ALGORITHM = "RSA-2048 + PSS + SHA-256"
-
-# ------------------------------------------------------------
-# Supported file extensions
-# ------------------------------------------------------------
-
 SUPPORTED_EXTENSIONS = {
-    # Images
-    ".jpg": "JPEG Image",
-    ".jpeg": "JPEG Image",
-    ".png": "PNG Image",
-    ".gif": "GIF Image",
-    ".bmp": "BMP Image",
-
-    # Documents
-    ".pdf": "PDF Document",
-
-    # Office / ZIP based
+    ".jpg": "JPEG Image", ".jpeg": "JPEG Image",
+    ".png": "PNG Image", ".gif": "GIF Image",
+    ".bmp": "BMP Image", ".pdf": "PDF Document",
     ".docx": "Microsoft Word Document",
     ".xlsx": "Microsoft Excel Spreadsheet",
     ".pptx": "Microsoft PowerPoint Presentation",
-
-    # Archive
-    ".zip": "ZIP Archive",
-}
-
-
-# ============================================================
-# SIGNATURE TRAILER
-#
-# Signed file:
-#
-# [ORIGINAL FILE DATA]
-# [RSA SIGNATURE]
-# [SIGNATURE LENGTH - 8 BYTES]
-# [MAGIC]
-#
-# Only formats that safely tolerate trailing data are allowed.
-# ============================================================
-
-MAGIC = b"BSILENT-DIGSIG-V4"
+    ".zip": "ZIP Archive"}
+MAGIC = b"DIGITAL-SIGNATURE-V1"
 MAGIC_LEN = len(MAGIC)
-
-# RSA-2048 produces a 256-byte signature
 RSA2048_SIGNATURE_SIZE = 256
-
-# uint64
 LENGTH_SIZE = 8
-
-
-# ============================================================
-# COLORS
-# ============================================================
-
-GREEN = "\033[92m"
-RED = "\033[91m"
-YELLOW = "\033[93m"
-RESET = "\033[0m"
-
-
-def green(text):
-    return f"{GREEN}{text}{RESET}"
-
-
-def red(text):
-    return f"{RED}{text}{RESET}"
-
-
-def yellow(text):
-    return f"{YELLOW}{text}{RESET}"
-
-
-# ============================================================
-# SHA-256
-# ============================================================
-
+GREEN, RED, RESET = "\033[92m", "\033[91m", "\033[0m"
+def green(text): return f"{GREEN}{text}{RESET}"
+def red(text): return f"{RED}{text}{RESET}"
 def calculate_sha256(data):
     return hashlib.sha256(data).hexdigest()
-
-
-# ============================================================
-# KEY LOADING
-# ============================================================
-
 def load_private_key(path):
     path = Path(path)
-
     if not path.exists():
-        raise FileNotFoundError(
-            f"Private key not found: {path}"
-        )
-
+        raise FileNotFoundError(f"Private key not found: {path}")
     with open(path, "rb") as f:
-        return serialization.load_pem_private_key(
-            f.read(),
-            password=None
-        )
-
-
+        key = serialization.load_pem_private_key(f.read(), password=None)
+    if not hasattr(key, "key_size") or key.key_size != 2048:
+        raise ValueError("Private key must be RSA-2048")
+    return key
 def load_public_key(path):
     path = Path(path)
-
     if not path.exists():
-        raise FileNotFoundError(
-            f"Public key not found: {path}"
-        )
-
+        raise FileNotFoundError(f"Public key not found: {path}")
     with open(path, "rb") as f:
-        return serialization.load_pem_public_key(
-            f.read()
-        )
-
-
-# ============================================================
-# FILE SUPPORT CHECK
-# ============================================================
-
-def get_extension(file_path):
-    return Path(file_path).suffix.lower()
-
-
-def is_supported_file(file_path):
-    extension = get_extension(file_path)
-
-    return extension in SUPPORTED_EXTENSIONS
-
-
-def get_file_type(file_path):
-    extension = get_extension(file_path)
-
-    return SUPPORTED_EXTENSIONS.get(
-        extension,
-        "Unsupported"
-    )
-
-
-def require_supported_file(file_path):
-    extension = get_extension(file_path)
-
-    if extension not in SUPPORTED_EXTENSIONS:
-
-        supported = ", ".join(
-            sorted(SUPPORTED_EXTENSIONS.keys())
-        )
-
+        key = serialization.load_pem_public_key(f.read())
+    if not hasattr(key, "key_size") or key.key_size != 2048:
+        raise ValueError("Public key must be RSA-2048")
+    return key
+def get_extension(path):
+    return Path(path).suffix.lower()
+def is_supported_file(path):
+    return get_extension(path) in SUPPORTED_EXTENSIONS
+def get_file_type(path):
+    return SUPPORTED_EXTENSIONS.get(get_extension(path), "Unsupported")
+def require_supported_file(path):
+    ext = get_extension(path)
+    if ext not in SUPPORTED_EXTENSIONS:
         raise ValueError(
-            f"Unsupported file type '{extension or '[no extension]'}'. "
-            f"Supported types: {supported}"
-        )
-
-
-# ============================================================
-# RSA SIGNATURE
-# ============================================================
-
+            f"Unsupported file type '{ext or '[no extension]'}'. "
+            f"Supported types: {', '.join(sorted(SUPPORTED_EXTENSIONS))}")
 def create_signature(private_key, data):
-
     return private_key.sign(
-        data,
-
-        padding.PSS(
-            mgf=padding.MGF1(hashes.SHA256()),
-            salt_length=padding.PSS.MAX_LENGTH
-        ),
-
-        hashes.SHA256()
-    )
-
-
-# ============================================================
-# RSA VERIFICATION
-# ============================================================
-
+        data, padding.PSS(mgf=padding.MGF1(hashes.SHA256()),
+        salt_length=padding.PSS.MAX_LENGTH), hashes.SHA256())
 def verify_signature(public_key, data, signature):
-
     try:
-
         public_key.verify(
-            signature,
-            data,
-
-            padding.PSS(
-                mgf=padding.MGF1(hashes.SHA256()),
-                salt_length=padding.PSS.MAX_LENGTH
-            ),
-
-            hashes.SHA256()
-        )
-
+            signature, data, padding.PSS(
+            mgf=padding.MGF1(hashes.SHA256()),
+            salt_length=padding.PSS.MAX_LENGTH), hashes.SHA256())
         return True
-
     except InvalidSignature:
-
         return False
-
-
-# ============================================================
-# CREATE SIGNATURE TRAILER
-# ============================================================
-
 def create_trailer(signature):
-
-    signature_length = struct.pack(
-        ">Q",
-        len(signature)
-    )
-
-    return (
-        signature
-        + signature_length
-        + MAGIC
-    )
-
-
-# ============================================================
-# EXTRACT SIGNATURE TRAILER
-# ============================================================
-
+    return signature + struct.pack(">Q", len(signature)) + MAGIC
 def extract_signature(data):
-
-    minimum_size = (
-        RSA2048_SIGNATURE_SIZE
-        + LENGTH_SIZE
-        + MAGIC_LEN
-    )
-
-    if len(data) < minimum_size:
+    minimum_size = RSA2048_SIGNATURE_SIZE + LENGTH_SIZE + MAGIC_LEN
+    if len(data) < minimum_size or not data.endswith(MAGIC):
         return None, None
-
-    # --------------------------------------------------------
-    # Check magic
-    # --------------------------------------------------------
-
-    if not data.endswith(MAGIC):
-        return None, None
-
-    # --------------------------------------------------------
-    # Locate signature length
-    # --------------------------------------------------------
-
-    length_start = (
-        len(data)
-        - MAGIC_LEN
-        - LENGTH_SIZE
-    )
-
+    length_start = len(data) - MAGIC_LEN - LENGTH_SIZE
     signature_length = struct.unpack(
-        ">Q",
-        data[
-            length_start:
-            length_start + LENGTH_SIZE
-        ]
-    )[0]
-
-    # --------------------------------------------------------
-    # RSA-2048 signature must be 256 bytes
-    # --------------------------------------------------------
-
+        ">Q", data[length_start:length_start + LENGTH_SIZE])[0]
     if signature_length != RSA2048_SIGNATURE_SIZE:
         return None, None
-
-    # --------------------------------------------------------
-    # Locate signature
-    # --------------------------------------------------------
-
-    signature_start = (
-        length_start
-        - signature_length
-    )
-
+    signature_start = length_start - signature_length
     if signature_start < 0:
         return None, None
-
-    signature = data[
-        signature_start:
-        length_start
-    ]
-
-    original_data = data[
-        :signature_start
-    ]
-
-    return original_data, signature
-
-
-# ============================================================
-# REMOVE EXISTING SIGNATURE
-# ============================================================
-
+    return data[:signature_start], data[signature_start:length_start]
 def remove_signature_if_present(data):
-
-    original_data, signature = extract_signature(data)
-
-    if (
-        original_data is not None
-        and signature is not None
-    ):
-        return original_data
-
-    return data
-
-
-# ============================================================
-# SIGNED OUTPUT NAME
-# ============================================================
-
-def create_signed_filename(file_path):
-
-    path = Path(file_path)
-
-    if path.suffix:
-
-        return path.with_name(
-            f"{path.stem}_signed{path.suffix}"
-        )
-
+    original, signature = extract_signature(data)
+    return original if original is not None and signature is not None else data
+def create_signed_filename(path):
+    path = Path(path)
     return path.with_name(
-        f"{path.name}_signed"
-    )
-
-
-# ============================================================
-# SIGN FILE
-# ============================================================
-
+        f"{path.stem}_signed{path.suffix}"
+        if path.suffix else f"{path.name}_signed")
 def sign_file(private_key_path, file_path):
-
     file_path = Path(file_path)
-
-    # --------------------------------------------------------
-    # File checks
-    # --------------------------------------------------------
-
     if not file_path.exists():
-
-        raise FileNotFoundError(
-            f"File not found: {file_path}"
-        )
-
+        raise FileNotFoundError(f"File not found: {file_path}")
     if not file_path.is_file():
-
-        raise ValueError(
-            f"Not a regular file: {file_path}"
-        )
-
-    # --------------------------------------------------------
-    # Extension check
-    # --------------------------------------------------------
-
+        raise ValueError(f"Not a regular file: {file_path}")
     require_supported_file(file_path)
-
-    # --------------------------------------------------------
-    # Read original file
-    # --------------------------------------------------------
-
     with open(file_path, "rb") as f:
         data = f.read()
-
-    # --------------------------------------------------------
-    # Remove old signature if input is already signed
-    # --------------------------------------------------------
-
     clean_data = remove_signature_if_present(data)
-
-    # --------------------------------------------------------
-    # Load private key
-    # --------------------------------------------------------
-
-    private_key = load_private_key(
-        private_key_path
-    )
-
-    # --------------------------------------------------------
-    # Create RSA signature
-    # --------------------------------------------------------
-
-    signature = create_signature(
-        private_key,
-        clean_data
-    )
-
-    # --------------------------------------------------------
-    # Create trailer
-    # --------------------------------------------------------
-
-    trailer = create_trailer(
-        signature
-    )
-
-    # --------------------------------------------------------
-    # Output filename
-    # --------------------------------------------------------
-
-    output_path = create_signed_filename(
-        file_path
-    )
-
-    # --------------------------------------------------------
-    # Write signed file
-    # --------------------------------------------------------
-
+    private_key = load_private_key(private_key_path)
+    signature = create_signature(private_key, clean_data)
+    output_path = create_signed_filename(file_path)
     with open(output_path, "wb") as f:
-
-        f.write(clean_data)
-        f.write(trailer)
-
-    # --------------------------------------------------------
-    # SHA-256 of original data
-    # --------------------------------------------------------
-
-    sha256 = calculate_sha256(
-        clean_data
-    )
-
-    # --------------------------------------------------------
-    # Timestamp
-    # --------------------------------------------------------
-
-    signed_at = datetime.now().astimezone().strftime(
-        "%Y-%m-%d %H:%M:%S %Z"
-    )
-
-    # --------------------------------------------------------
-    # Output
-    # --------------------------------------------------------
-
-    print()
-
-    print(
-        green("✓ DIGITAL SIGNATURE CREATED")
-    )
-
-    print("--------------------------------")
-
-    print(
-        f"Original   : {file_path.resolve()}"
-    )
-
-    print(
-        f"Signed     : {output_path.resolve()}"
-    )
-
-    print(
-        f"SHA-256    : {sha256}"
-    )
-
-    print(
-        f"Algorithm  : {ALGORITHM}"
-    )
-
-    print(
-        f"Signed At  : {signed_at}"
-    )
-
-    print("--------------------------------")
-
-    print()
-
-
-# ============================================================
-# CHECK SIGNATURE
-# ============================================================
-
+        f.write(clean_data + create_trailer(signature))
+    sha256 = calculate_sha256(clean_data)
+    signed_at = datetime.now().astimezone().strftime("%Y-%m-%d %H:%M:%S %Z")
+    print(f"\n{green('✓ DIGITAL SIGNATURE CREATED')}\n--------------------------------")
+    print(f"Original   : {file_path.resolve()}")
+    print(f"Signed     : {output_path.resolve()}")
+    print(f"SHA-256    : {sha256}")
+    print(f"Algorithm  : {ALGORITHM}")
+    print(f"Signed At  : {signed_at}")
+    print("--------------------------------\n")
 def check_file(public_key_path, file_path):
-
     file_path = Path(file_path)
-
-    # --------------------------------------------------------
-    # File checks
-    # --------------------------------------------------------
-
     if not file_path.exists():
-
-        raise FileNotFoundError(
-            f"File not found: {file_path}"
-        )
-
+        raise FileNotFoundError(f"File not found: {file_path}")
     if not file_path.is_file():
-
-        raise ValueError(
-            f"Not a regular file: {file_path}"
-        )
-
-    # --------------------------------------------------------
-    # Extension check
-    # --------------------------------------------------------
-
+        raise ValueError(f"Not a regular file: {file_path}")
     require_supported_file(file_path)
-
-    # --------------------------------------------------------
-    # Read signed file
-    # --------------------------------------------------------
-
     with open(file_path, "rb") as f:
         signed_data = f.read()
-
-    # --------------------------------------------------------
-    # Extract original data + signature
-    # --------------------------------------------------------
-
-    original_data, signature = extract_signature(
-        signed_data
-    )
-
-    # --------------------------------------------------------
-    # No valid trailer
-    # --------------------------------------------------------
-
-    if (
-        original_data is None
-        or signature is None
-    ):
-
-        sha256 = calculate_sha256(
-            signed_data
-        )
-
-        print()
-
-        print(
-            red("✗ SIGNATURE INVALID")
-        )
-
-        print("--------------------------------")
-
-        print(
-            f"File      : {file_path.resolve()}"
-        )
-
-        print(
-            f"SHA-256   : {sha256}"
-        )
-
-        print(
-            f"Algorithm : {ALGORITHM}"
-        )
-
-        print("--------------------------------")
-
-        print()
-
+    original_data, signature = extract_signature(signed_data)
+    if original_data is None or signature is None:
+        sha256 = calculate_sha256(signed_data)
+        print(f"\n{red('✗ SIGNATURE INVALID')}\n--------------------------------")
+        print(f"File      : {file_path.resolve()}")
+        print(f"SHA-256   : {sha256}")
+        print(f"Algorithm : {ALGORITHM}")
+        print("--------------------------------\n")
         return False
-
-    # --------------------------------------------------------
-    # Load public key
-    # --------------------------------------------------------
-
-    public_key = load_public_key(
-        public_key_path
-    )
-
-    # --------------------------------------------------------
-    # Verify signature
-    # --------------------------------------------------------
-
-    valid = verify_signature(
-        public_key,
-        original_data,
-        signature
-    )
-
-    # --------------------------------------------------------
-    # SHA-256
-    # --------------------------------------------------------
-
-    sha256 = calculate_sha256(
-        original_data
-    )
-
-    # --------------------------------------------------------
-    # Output
-    # --------------------------------------------------------
-
-    print()
-
-    if valid:
-
-        print(
-            green("✓ SIGNATURE VALID")
-        )
-
-    else:
-
-        print(
-            red("✗ SIGNATURE INVALID")
-        )
-
-    print("--------------------------------")
-
-    print(
-        f"File      : {file_path.resolve()}"
-    )
-
-    print(
-        f"SHA-256   : {sha256}"
-    )
-
-    print(
-        f"Algorithm : {ALGORITHM}"
-    )
-
-    print("--------------------------------")
-
-    print()
-
+    public_key = load_public_key(public_key_path)
+    valid = verify_signature(public_key, original_data, signature)
+    sha256 = calculate_sha256(original_data)
+    status = green("✓ SIGNATURE VALID") if valid else red("✗ SIGNATURE INVALID")
+    print(f"\n{status}\n--------------------------------")
+    print(f"File      : {file_path.resolve()}")
+    print(f"SHA-256   : {sha256}")
+    print(f"Algorithm : {ALGORITHM}")
+    print("--------------------------------\n")
     return valid
-
-
-# ============================================================
-# VERIFY
-# ============================================================
-
 def verify_file(public_key_path, file_path):
-
-    return check_file(
-        public_key_path,
-        file_path
-    )
-
-
-# ============================================================
-# HELP
-# ============================================================
-
+    return check_file(public_key_path, file_path)
 def print_supported_files():
-
-    print()
-    print("Supported file types:")
-    print()
-
     categories = {
-        "Images": [
-            ".jpg",
-            ".jpeg",
-            ".png",
-            ".gif",
-            ".bmp",
-        ],
-
-        "Documents": [
-            ".pdf",
-        ],
-
-        "Office": [
-            ".docx",
-            ".xlsx",
-            ".pptx",
-        ],
-
-        "Archives": [
-            ".zip",
-        ],
-    }
-
+        "Images": [".jpg", ".jpeg", ".png", ".gif", ".bmp"],
+        "Documents": [".pdf"],
+        "Office": [".docx", ".xlsx", ".pptx"],
+        "Archives": [".zip"]}
+    print("\nSupported file types:\n")
     for category, extensions in categories.items():
-
         print(f"  {category}:")
-
-        for extension in extensions:
-
-            description = SUPPORTED_EXTENSIONS[
-                extension
-            ]
-
-            print(
-                f"    {extension:<7} {description}"
-            )
-
+        for ext in extensions:
+            print(f"    {ext:<7} {SUPPORTED_EXTENSIONS[ext]}")
         print()
-
-
-# ============================================================
-# MAIN
-# ============================================================
-
 def main():
-
-    description = (
-        "Digital Signature Tool using "
-        "RSA-2048 + PSS + SHA-256.\n\n"
-        "The signature is stored in a custom trailer "
-        "at the end of supported files.\n"
-        "Only file formats that safely tolerate the "
-        "trailer are supported."
-    )
-
+    description = "RSA-2048/PSS/SHA-256 file signing and verification."
     parser = argparse.ArgumentParser(
         description=description,
-        formatter_class=argparse.RawTextHelpFormatter
-    )
-
+        formatter_class=argparse.RawTextHelpFormatter)
     subparsers = parser.add_subparsers(
-        dest="command",
-        required=True
-    )
-
-    # ========================================================
-    # SIGN
-    # ========================================================
-
-    sign_parser = subparsers.add_parser(
-        "sign",
-        help="Create a digital signature"
-    )
-
+        dest="command", required=True)
+    sign_parser = subparsers.add_parser("sign", help="Sign a file")
     sign_parser.add_argument(
-        "-privatekey",
-        required=True,
-        help="Path to RSA private key"
-    )
-
+        "-privatekey", required=True, help="Private key path")
     sign_parser.add_argument(
-        "-file",
-        required=True,
-        help="Supported file to sign"
-    )
-
-    # ========================================================
-    # CHECK
-    # ========================================================
-
-    check_parser = subparsers.add_parser(
-        "check",
-        help="Check an embedded digital signature"
-    )
-
-    check_parser.add_argument(
-        "-publickey",
-        required=True,
-        help="Path to RSA public key"
-    )
-
-    check_parser.add_argument(
-        "-file",
-        required=True,
-        help="Signed file"
-    )
-
-    # ========================================================
-    # VERIFY
-    # ========================================================
-
-    verify_parser = subparsers.add_parser(
-        "verify",
-        help="Verify an embedded digital signature"
-    )
-
-    verify_parser.add_argument(
-        "-publickey",
-        required=True,
-        help="Path to RSA public key"
-    )
-
-    verify_parser.add_argument(
-        "-file",
-        required=True,
-        help="Signed file"
-    )
-
-    # ========================================================
-    # SUPPORTED FILES
-    # ========================================================
-
-    supported_parser = subparsers.add_parser(
-        "supported",
-        help="Show all supported file types"
-    )
-
+        "-file", required=True, help="File to sign")
+    for command, description in [
+        ("check", "Check signature"),
+        ("verify", "Verify signature")]:
+        sub = subparsers.add_parser(command, help=description)
+        sub.add_argument(
+            "-publickey", required=True, help="Public key path")
+        sub.add_argument(
+            "-file", required=True, help="Signed file path")
+    subparsers.add_parser("supported", help="List supported formats")
     args = parser.parse_args()
-
     try:
-
-        # ----------------------------------------------------
-        # SIGN
-        # ----------------------------------------------------
-
         if args.command == "sign":
-
-            sign_file(
-                args.privatekey,
-                args.file
-            )
-
-        # ----------------------------------------------------
-        # CHECK
-        # ----------------------------------------------------
-
-        elif args.command == "check":
-
-            valid = check_file(
-                args.publickey,
-                args.file
-            )
-
+            sign_file(args.privatekey, args.file)
+        elif args.command in ("check", "verify"):
             sys.exit(
-                0 if valid else 1
-            )
-
-        # ----------------------------------------------------
-        # VERIFY
-        # ----------------------------------------------------
-
-        elif args.command == "verify":
-
-            valid = verify_file(
-                args.publickey,
-                args.file
-            )
-
-            sys.exit(
-                0 if valid else 1
-            )
-
-        # ----------------------------------------------------
-        # SUPPORTED
-        # ----------------------------------------------------
-
+                0 if check_file(args.publickey, args.file) else 1)
         elif args.command == "supported":
-
             print_supported_files()
-
-    except FileNotFoundError as e:
-
-        print()
-        print(
-            red(f"✗ ERROR: {e}")
-        )
-        print()
-
+    except (FileNotFoundError, ValueError) as e:
+        print(f"\n{red(f'✗ ERROR: {e}')}\n")
         sys.exit(1)
-
-    except ValueError as e:
-
-        print()
-        print(
-            red(f"✗ ERROR: {e}")
-        )
-        print()
-
-        sys.exit(1)
-
     except Exception as e:
-
-        print()
-        print(
-            red(f"✗ ERROR: {e}")
-        )
-        print()
-
+        print(f"\n{red(f'✗ ERROR: {e}')}\n")
         sys.exit(1)
-
-
 if __name__ == "__main__":
     main()
