@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>21: JavaScript Event Handling</title>
+    <style>
+        body { font-family: sans-serif; padding: 20px; }
+        .interactive-zone {
+            width: 250px; height: 100px; line-height: 100px;
+            text-align: center; background-color: #f3f4f6;
+            border: 2px dashed #9ca3af; margin: 15px 0;
+            font-weight: bold; cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <h2>JavaScript Browser Events</h2>
+    
+    <input type="text" id="nameInput" placeholder="Type something here (input event)">
+    <p id="echoText">Echo: </p>
+
+    <div id="hoverBox" class="interactive-zone">Hover / Click Me</div>
+    <p id="eventLog">Status: Waiting for interaction...</p>
+
+    <script>
+        const input = document.getElementById("nameInput");
+        const echo = document.getElementById("echoText");
+        const box = document.getElementById("hoverBox");
+        const log = document.getElementById("eventLog");
+
+        input.addEventListener("input", (e) => {        // Handle real-time input event
+            echo.textContent = "Echo: " + e.target.value;
+        });
+
+        box.addEventListener("mouseenter", () => {      // Handle mouse enter event
+            box.style.backgroundColor = "#fed7aa";
+            log.textContent = "Status: Mouse entered!";
+        });
+
+        box.addEventListener("mouseleave", () => {      // Handle mouse leave event
+            box.style.backgroundColor = "#f3f4f6";
+            log.textContent = "Status: Mouse left!";
+        });
+
+        box.addEventListener("click", () => {           // Handle mouse click event
+            log.textContent = "Status: Box clicked at " + new Date().toLocaleTimeString();
+        });
+    </script>
+</body>
+</html>

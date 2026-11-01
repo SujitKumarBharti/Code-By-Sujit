@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>20: DOM Manipulation Basics</title>
+    <style>
+        body { font-family: sans-serif; padding: 20px; line-height: 1.6; }
+        .box { padding: 15px; border: 2px solid #333; border-radius: 8px; margin-top: 10px; }
+        button { padding: 8px 16px; margin-right: 8px; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <h2>JavaScript DOM Manipulation</h2>
+    <div id="displayBox" class="box">Initial Content in DIV.</div>
+    <br>
+    <button id="btnText">Change Text</button>
+    <button id="btnStyle">Change Style</button>
+    <button id="btnAdd">Add List Item</button>
+    <ul id="itemList"></ul>
+
+    <script>
+        const box = document.getElementById("displayBox");
+        const list = document.getElementById("itemList");
+
+        document.getElementById("btnText").addEventListener("click", () => {
+            box.innerText = "Text dynamically updated via JavaScript DOM!";
+        });
+
+        document.getElementById("btnStyle").addEventListener("click", () => {
+            box.style.backgroundColor = "#e0f2fe";
+            box.style.borderColor = "#0284c7";
+            box.style.color = "#0369a1";
+        });
+
+        document.getElementById("btnAdd").addEventListener("click", () => {
+            const li = document.createElement("li");
+            li.textContent = `New item added at ${new Date().toLocaleTimeString()}`;
+            list.appendChild(li);
+        });
+    </script>
+</body>
+</html>

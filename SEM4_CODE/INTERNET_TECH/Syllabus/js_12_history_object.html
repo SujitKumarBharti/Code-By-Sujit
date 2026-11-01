@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html>
+<head><title>History Object Demo</title></head>
+<body>
+    <button onclick="window.history.back()">Go Back</button>
+    <button onclick="window.history.forward()">Go Forward</button>
+    <p>History Length: <span id="len"></span></p>
+    <script>
+        document.getElementById("len").innerText = window.history.length;
+    </script>
+</body>
+</html>
